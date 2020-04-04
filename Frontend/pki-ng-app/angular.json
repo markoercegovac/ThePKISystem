@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "pki-ng-app"
+    }
+  },
+  "defaultProject": "pki-ng-app",
+  "cli": {
+    "analytics": false
+  }
 }
