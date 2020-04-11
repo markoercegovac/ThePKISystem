@@ -9,12 +9,14 @@ import { CertificateListComponent } from './certificate-list/certificate-list.co
 import { FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 
+
 @NgModule({
   declarations: [
     AppComponent,
     NavigationComponent,
     CertificateComponent,
-    CertificateListComponent
+    CertificateListComponent,
+
   ],
   imports: [
     BrowserModule,
