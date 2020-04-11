@@ -1,9 +1,14 @@
 package com.pki.app.service.impl;
 
+import com.pki.app.dto.CertificateDto;
+import com.pki.app.service.KeyService;
 import com.pki.app.service.KeystoreService;
 
 import java.security.*;
 import java.security.cert.Certificate;
+
+import com.sun.xml.bind.v2.TODO;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.mapping.PrimaryKey;
 import org.springframework.stereotype.Service;
 
@@ -15,24 +20,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class KeystoreServiceImpl implements KeystoreService {
 
-    @Override
-    public void generateKeyStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
-        String storeKey="password";
-        char[] storeKeyChar=storeKey.toCharArray();
-
-        KeyStore keyStore=KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(null,storeKeyChar);
-
-        try (FileOutputStream fos = new FileOutputStream("test.jks")) {
-            keyStore.store(fos, storeKeyChar);
-        }
-
-    }
+    private final KeyService keyService;
 
     @Override
     public void store(String keyStorePassword, String keyPassword, Certificate[] chain, PrivateKey privateKey, String alias,String keyStorePath) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
@@ -48,8 +45,25 @@ public class KeystoreServiceImpl implements KeystoreService {
     public KeyStore getKeyStore(String keyStorePath, String keyStorePassword) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException {
         char[] keyStorePasswordChars=keyStorePassword.toCharArray();
         KeyStore keyStore=KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(new FileInputStream(keyStorePath),keyStorePasswordChars);
+        try{
+            keyStore.load(new FileInputStream(keyStorePath),keyStorePasswordChars);
+        }catch (FileNotFoundException e){
+            keyStore.load(null,keyStorePasswordChars);
+        }
         return keyStore;
+    }
+
+    @Override
+    public List<CertificateDto> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        String keyStorePath=keyService.getKeyStorePath();
+        KeyStore keyStore=getKeyStore(keyStorePath,keyStorePass);
+        List<CertificateDto>certificateList=new ArrayList<>();
+        while(keyStore.aliases().hasMoreElements()){
+            String alias=keyStore.aliases().nextElement();
+            Certificate[] certificates=keyStore.getCertificateChain(alias);
+            //TODO NM: Uradi konverter iz lanca sertifikata u listu nasih dto sertifikata i ovu metodu koristi na kontrolleru
+        }
+        return certificateList;
     }
 
 }

@@ -15,8 +15,7 @@ import java.security.cert.CertificateException;
 import java.util.List;
 
 public interface KeystoreService {
-    void generateKeyStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException;
     void store(String keyStorePassword,String keyPassword,Certificate[] chain,PrivateKey privateKey,String alias,String keyStorePath) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
     KeyStore getKeyStore(String keyStorePath,String keyStorePassword) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException;
-    List<CertificateDto> getCertificates(String keyStorePass);
+    List<CertificateDto> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
 }

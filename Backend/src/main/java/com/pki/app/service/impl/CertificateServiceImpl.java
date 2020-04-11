@@ -8,6 +8,9 @@ import com.pki.app.service.CertificateService;
 import com.pki.app.service.KeyService;
 import com.pki.app.service.KeystoreService;
 import lombok.RequiredArgsConstructor;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
@@ -21,6 +24,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -35,6 +39,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public X509Certificate generateCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws OperatorCreationException, NoSuchAlgorithmException, CertificateException {
         JcaContentSignerBuilder builder=new JcaContentSignerBuilder("SHA256withECDSA");
+        Security.addProvider(new BouncyCastleProvider());
         builder=builder.setProvider("BC");
         ContentSigner contentSigner=builder.build(issuerDto.getPrivateKey());
         BigInteger serialNumber=new BigInteger(1,keyService.getSerialNumber());
@@ -48,6 +53,26 @@ public class CertificateServiceImpl implements CertificateService {
         X509Certificate certificate=generateCertificate(subjectDto,issuerDto);
         String keyPass="key";
         keystoreService.store(keyService.getKeyStorePass(),keyPass,new Certificate[]{certificate},issuerDto.getPrivateKey(),
-                "@test.com",keyService.getKeyStorePath());
+                "@test1.com",keyService.getKeyStorePath());
     }
+
+    @Override
+    public X500Name getX500NameSubject() {
+        X500NameBuilder builder=new X500NameBuilder(BCStyle.INSTANCE);
+        builder.addRDN(BCStyle.CN,"system.com");
+        builder.addRDN(BCStyle.O, "test.com");
+        builder.addRDN(BCStyle.C, "Srbija");
+        return builder.build();
+    }
+
+    @Override
+    public X500Name getX500NameIssuer() {
+        X500NameBuilder builder=new X500NameBuilder(BCStyle.INSTANCE);
+        builder.addRDN(BCStyle.CN,"system.com");
+        builder.addRDN(BCStyle.O, "test.com");
+        builder.addRDN(BCStyle.C, "Srbija");
+        return builder.build();
+    }
+
+
 }
