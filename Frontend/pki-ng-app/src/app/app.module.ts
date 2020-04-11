@@ -19,7 +19,7 @@ import {HttpClientModule} from "@angular/common/http";
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule,
+    HttpClientModule, //registrovanje servisa ne moramo explicitno da navedemo, ovo radi za nas
     AppRoutingModule,
   ],
   providers: [],
