@@ -1,5 +1,6 @@
 package com.pki.app.controller;
 
+
 import com.pki.app.model.Proba;
 import com.pki.app.model.SubjectData;
 import javafx.beans.InvalidationListener;
@@ -11,6 +12,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+
+import com.pki.app.dto.IssuerDto;
+import com.pki.app.dto.SubjectDto;
+
+import com.pki.app.service.CertificateService;
+import com.pki.app.service.KeyService;
+import com.pki.app.service.KeystoreService;
+
+import org.bouncycastle.operator.OperatorCreationException;
+
+
+
+
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertificateException;
+
 import java.util.Date;
 import java.util.List;
 
@@ -20,9 +41,22 @@ import java.util.List;
 @RequestMapping("/api/generate")
 public class CertificateController {
 
+    private final CertificateService certificateService;
+    private final KeystoreService keystoreService;
+    private final KeyService keyService;
+
     @PostMapping
-    public void generateCertificate(@RequestBody SubjectData subjectData){
-        Date d=subjectData.getStartDate();
+    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        Date d=subjectDto.getStartDate();
+        String pass="test";
+
+        IssuerDto issuerDto=new IssuerDto();
+        subjectDto.setX500Name(certificateService.getX500NameSubject());
+        subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
+        issuerDto.setX500Name(certificateService.getX500NameIssuer());
+        issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
+        keystoreService.getCertificates(keyService.getKeyStorePass());
+//          certificateService.createCertificate(subjectDto,issuerDto);
     }
 
     //za ispis tabele
