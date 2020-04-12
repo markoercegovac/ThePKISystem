@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import {CertificateComponent} from "./certificate/certificate.component";
 import {AppComponent} from "./app.component";
 import {CertificateListComponent} from "./certificate-list/certificate-list.component";
+import {CheckCertificateComponent} from "./check-certificate/check-certificate.component";
 
 
 const routes: Routes = [
@@ -13,6 +14,10 @@ const routes: Routes = [
   {
     path:'certificateList',
     component:CertificateListComponent
+  },
+  {
+    path:'checkCertificate',
+    component:CheckCertificateComponent
   }
 ];
 
