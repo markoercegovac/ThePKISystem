@@ -1,1 +1,40 @@
-<p>certificate-list works!</p>
+<html>
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+<div class="container">
+  <h1 class="text-danger text-center"> {{ title }} </h1>
+  <hr/>
+
+  <div *ngIf="myResponse">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <th>Id: </th>
+        <th>Serijski Broj: </th>
+        <th>Vazi od: </th>
+        <th>Vazi do: </th>
+        <th>Alijas: </th>
+      </thead>
+
+      <tbody>
+        <tr *ngFor=" let proba of myResponse ">
+          <td>{{proba.id}}</td>
+          <td>{{proba.serialNumber}}</td>
+          <td>{{proba.validFrom}}</td>
+          <td>{{proba.validTo}}</td>
+          <td>{{proba.alias}}</td>
+          <td><button (click)="revoke(proba)">Revoke</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+
+</div>
+
+</body>
+
+</html>

@@ -8,7 +8,7 @@ import { CertificateComponent } from './certificate/certificate.component';
 import { CertificateListComponent } from './certificate-list/certificate-list.component';
 import { FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
-import { CheckCertificateComponent } from './check-certificate/check-certificate.component';
+
 
 
 @NgModule({
@@ -17,13 +17,13 @@ import { CheckCertificateComponent } from './check-certificate/check-certificate
     NavigationComponent,
     CertificateComponent,
     CertificateListComponent,
-    CheckCertificateComponent,
+
 
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule,
+    HttpClientModule, //registrovanje servisa ne moramo explicitno da navedemo, ovo radi za nas
     AppRoutingModule,
   ],
   providers: [],
