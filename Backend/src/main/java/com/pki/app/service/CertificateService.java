@@ -10,6 +10,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -18,4 +19,5 @@ public interface CertificateService {
     void createCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, KeyStoreException;
     X500Name getX500NameSubject();
     X500Name getX500NameIssuer();
+    Certificate[] getCertificateChain(String alias);
 }

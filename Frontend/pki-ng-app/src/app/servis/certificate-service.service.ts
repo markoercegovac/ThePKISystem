@@ -23,4 +23,8 @@ export class CertificateServiceService {
   public revokeCertificate(certificate:Certificate){
     return this.http.post<Certificate>(this.URL+'/revoke',certificate);
   }
+
+  public checkCertificateStatus(certificate:Certificate){
+    return this.http.post<Certificate>(this.URL+'/check',certificate);
+  }
 }

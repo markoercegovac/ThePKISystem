@@ -19,13 +19,14 @@
       </thead>
 
       <tbody>
-        <tr *ngFor=" let proba of myResponse ">
-          <td>{{proba.id}}</td>
-          <td>{{proba.serialNumber}}</td>
-          <td>{{proba.validFrom}}</td>
-          <td>{{proba.validTo}}</td>
-          <td>{{proba.alias}}</td>
-          <td><button (click)="revoke(proba)">Revoke</button></td>
+        <tr *ngFor=" let certificate of myResponse ">
+          <td>{{certificate.id}}</td>
+          <td>{{certificate.serialNumber}}</td>
+          <td>{{certificate.validFrom}}</td>
+          <td>{{certificate.validTo}}</td>
+          <td>{{certificate.alias}}</td>
+          <td><button (click)="revoke(certificate)">Revoke</button></td>
+          <td><button (click)="check(certificate)">Check Status</button></td>
         </tr>
       </tbody>
     </table>

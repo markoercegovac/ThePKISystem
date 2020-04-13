@@ -12,7 +12,7 @@ public class KeyServiceImpl implements KeyService {
     public byte[] getSerialNumber() throws NoSuchAlgorithmException {
         SecureRandom secureRandom=null;
         secureRandom=SecureRandom.getInstance("Windows-PRNG");
-        byte[] values = new byte[124];
+        byte[] values = new byte[10];
         secureRandom.nextBytes(values);
         return values;
     }

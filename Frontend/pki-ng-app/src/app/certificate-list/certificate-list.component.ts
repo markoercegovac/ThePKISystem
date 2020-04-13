@@ -39,5 +39,16 @@ export class CertificateListComponent implements OnInit {
     );
   }
 
+  check(certificate:Certificate){
+    this.certService.checkCertificateStatus(certificate).subscribe(
+      res=> {
+        location.reload();
+      },
+      error => {
+        alert("Error");
+      }
+      );
+  }
+
 
 }

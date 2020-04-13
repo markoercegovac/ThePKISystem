@@ -74,5 +74,10 @@ public class CertificateServiceImpl implements CertificateService {
         return builder.build();
     }
 
+    @Override
+    public Certificate[] getCertificateChain(String alias) {
+        return null;
+    }
+
 
 }

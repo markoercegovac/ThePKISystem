@@ -57,8 +57,8 @@ public class CertificateController {
         subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
         issuerDto.setX500Name(certificateService.getX500NameIssuer());
         issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
-        keystoreService.getCertificates(keyService.getKeyStorePass());
-//          certificateService.createCertificate(subjectDto,issuerDto);
+//        keystoreService.getCertificates(keyService.getKeyStorePass());
+          certificateService.createCertificate(subjectDto,issuerDto);
     }
 
     //za ispis tabele
@@ -70,6 +70,10 @@ public class CertificateController {
     @PostMapping("/revoke")
     public void revokeCertificate(@RequestBody CertificateDto certificateDto){
         ocspService.revoke(certificateDto);
+    }
+    @PostMapping("/check")
+    public void checkStatus(@RequestBody CertificateDto certificateDto){
+        ocspService.check(certificateDto.getSerialNumber());
     }
 
 }
