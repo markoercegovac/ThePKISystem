@@ -8,6 +8,8 @@ import { CertificateComponent } from './certificate/certificate.component';
 import { CertificateListComponent } from './certificate-list/certificate-list.component';
 import { FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
+import { SelfsignedCertificateComponent } from './selfsignedCertificate/selfsigned-certificate.component';
+
 
 
 @NgModule({
@@ -16,6 +18,8 @@ import {HttpClientModule} from "@angular/common/http";
     NavigationComponent,
     CertificateComponent,
     CertificateListComponent,
+    SelfsignedCertificateComponent,
+
 
   ],
   imports: [

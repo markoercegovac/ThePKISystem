@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {Certificate} from "../model/certificate";
 import {CertificateServiceService} from "../servis/certificate-service.service";
 
+
 @Component({
   selector: 'app-certificate-list',
   templateUrl: './certificate-list.component.html',
@@ -12,6 +13,8 @@ export class CertificateListComponent implements OnInit {
 
   title='Sertifikati';
   myResponse: Certificate[];
+
+  id:string;
 
   constructor(private certService: CertificateServiceService) { }
 
@@ -25,5 +28,27 @@ export class CertificateListComponent implements OnInit {
       }
     );
   }
+  revoke(certificate:Certificate){
+    this.certService.revokeCertificate(certificate).subscribe(
+      res=> {
+        location.reload();
+      },
+      error => {
+        alert("Error");
+      }
+    );
+  }
+
+  check(certificate:Certificate){
+    this.certService.checkCertificateStatus(certificate).subscribe(
+      res=> {
+        location.reload();
+      },
+      error => {
+        alert("Error");
+      }
+      );
+  }
+
 
 }

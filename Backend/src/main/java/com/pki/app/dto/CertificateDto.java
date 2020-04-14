@@ -1,5 +1,6 @@
 package com.pki.app.dto;
 
+import com.pki.app.enumeration.CertificateType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.bouncycastle.asn1.x500.RDN;
@@ -15,7 +16,7 @@ import java.util.Date;
 
 @AllArgsConstructor
 @Data
-public class CertificateDto {
+public class CertificateDto implements DtoEntity {
     private String subjName;
     private String subjOrgName; //ime organizacije
     private String subjCountry;
@@ -27,6 +28,9 @@ public class CertificateDto {
     private String serialNumber;
     private Date endDate;
     private Date startDate;
+
+    private CertificateType type;
+    private boolean valid;
 
 
     public CertificateDto() { }

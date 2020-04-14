@@ -1,5 +1,6 @@
 export class Certificate {
 
+  id: number;
   subjName: string;
   subjOrgName: string; //ime organizacije
   subjCountry: string;
@@ -12,7 +13,7 @@ export class Certificate {
   endDate: any;
   startDate: any;
 
-  constructor(subjName: string, subjOrgName: string, subjCountry: string, issName: string, issOrgName: string,issCountry: string,serialNumber: string,endDate: any,startDate: any){
+  constructor(id: number, subjName: string, subjOrgName: string, subjCountry: string, issName: string, issOrgName: string,issCountry: string,serialNumber: string,endDate: any,startDate: any){
     this.subjName=this.subjName;
     this.subjOrgName=subjOrgName;
     this.subjCountry=subjCountry;
@@ -22,5 +23,6 @@ export class Certificate {
     this.serialNumber=serialNumber;
     this.endDate=endDate;
     this.startDate=startDate;
+    this.id=id;
   }
 }

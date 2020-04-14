@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import {CertificateComponent} from "./certificate/certificate.component";
 import {AppComponent} from "./app.component";
 import {CertificateListComponent} from "./certificate-list/certificate-list.component";
-
+import {SelfsignedCertificateComponent} from "./selfsignedCertificate/selfsigned-certificate.component";
 
 const routes: Routes = [
   {
@@ -13,6 +13,10 @@ const routes: Routes = [
   {
     path:'certificateList',
     component:CertificateListComponent
+  },
+  {
+    path: 'selfSigned/generate',
+    component:SelfsignedCertificateComponent
   }
 ];
 

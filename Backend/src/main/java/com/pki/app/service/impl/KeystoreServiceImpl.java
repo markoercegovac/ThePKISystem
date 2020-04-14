@@ -31,14 +31,13 @@ import java.util.List;
 public class KeystoreServiceImpl implements KeystoreService {
 
     private final KeyService keyService;
-    int i=0;
-    int zbir=0;
 
     @Override
     public void store(String keyStorePassword, String keyPassword, Certificate[] chain, PrivateKey privateKey, String alias,String keyStorePath) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         char[] keyStorePasswordChars=keyStorePassword.toCharArray();
         char[] keyPasswordChars=keyPassword.toCharArray();
 
+        // znaci get Key store pokusava da pronadje keyStore na zadatoj putanji,ako ga ne pronadje kreira novi
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePassword);
         keyStore.setKeyEntry(alias,privateKey,keyPasswordChars,chain);
         keyStore.store(new FileOutputStream(keyStorePath),keyStorePasswordChars);
@@ -56,24 +55,16 @@ public class KeystoreServiceImpl implements KeystoreService {
         return keyStore;
     }
 
-    @Override
     public List<X509Certificate> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         String keyStorePath=keyService.getKeyStorePath();
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePass);
         List<X509Certificate>certificateList=new ArrayList<>();
         Enumeration<String> aliass= keyStore.aliases();
+
         while(aliass.hasMoreElements()){
             String alias=aliass.nextElement();
-            Certificate[] certificates=keyStore.getCertificateChain(alias); //vraca lanac sertifikata
-
-            certificateList.add((X509Certificate) certificates[0]);
-
-
-
-
-            //TODO NM: Uradi konverter iz lanca sertifikata u listu nasih dto sertifikata i ovu metodu koristi na kontrolleru
-      //      X509Certificate x509certificate = (X509Certificate) certificates[0];
-     //       x509certificate.
+            X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
+            certificateList.add(certificate);
         }
         return certificateList;
     }

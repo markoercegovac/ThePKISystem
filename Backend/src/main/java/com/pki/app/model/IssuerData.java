@@ -9,4 +9,7 @@ import java.security.PrivateKey;
 public class IssuerData {
     private X500Name x500Name;
     private PrivateKey privateKey;
+
+
+
 }

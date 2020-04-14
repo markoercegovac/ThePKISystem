@@ -1,16 +1,22 @@
 <html>
 <head>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+  <style>
+    body,h1,h2,h3,h4,h5 {font-family: "Poppins", sans-serif}
+  </style>
 </head>
 
 <body>
-<div class="container">
-  <h1 class="text-danger text-center"> {{ title }} </h1>
+<div class="w3-main" >
+  <h1 class="text-danger text-center"><b> {{ title }} </b></h1>
   <hr/>
 
   <div *ngIf="myResponse">
     <table class="table table-bordered table-hover">
       <thead>
+        <th>Id: </th>
         <th>SubjName: </th>
         <th>SubjOrgName: </th>
         <th>SubjCountry: </th>
@@ -24,6 +30,7 @@
 
       <tbody>
         <tr *ngFor=" let proba of myResponse ">
+          <td>{{proba.id}}</td>
           <td>{{proba.subjName}}</td>
           <td>{{proba.subjOrgName}}</td>
           <td>{{proba.subjCountry}}</td>
@@ -33,6 +40,8 @@
           <td>{{proba.serialNumber}}</td>
           <td>{{proba.startDate}}</td>
           <td>{{proba.endDate}}</td>
+          <td><button (click)="revoke(proba)">Revoke</button></td>
+          <td><button (click)="check(proba)">Check Status</button></td>
         </tr>
       </tbody>
     </table>
