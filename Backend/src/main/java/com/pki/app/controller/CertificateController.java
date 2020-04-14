@@ -1,12 +1,16 @@
 package com.pki.app.controller;
 
+import com.pki.app.enumeration.CertificateType;
+import com.pki.app.model.Certificate;
 
 import com.pki.app.dto.CertificateDto;
 import com.pki.app.model.Proba;
 import com.pki.app.model.SubjectData;
 
+import com.pki.app.service.CertificateGeneratorService;
 import com.pki.app.service.OcspService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,24 +46,55 @@ import java.util.List;
 @RequestMapping("/api/generate")
 public class CertificateController {
 
+
+    private final CertificateGeneratorService CGservice;
+
     private final CertificateService certificateService;
     private final KeystoreService keystoreService;
     private final KeyService keyService;
     private final OcspService ocspService;
 
     @PostMapping
-    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
-        Date d=subjectDto.getStartDate();
-        String pass="test";
+    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, OperatorCreationException, CertificateException, KeyStoreException, IOException {
 
-        IssuerDto issuerDto=new IssuerDto();
-        subjectDto.setX500Name(certificateService.getX500NameSubject());
-        subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
-        issuerDto.setX500Name(certificateService.getX500NameIssuer());
-        issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
-//        keystoreService.getCertificates(keyService.getKeyStorePass());
-          certificateService.createCertificate(subjectDto,issuerDto);
+        //dio za tip
+        CertificateType cerType;
+        if(subjectDto.getType().equals("ROOT")) {
+            cerType=CertificateType.ROOT;
+        }
+        else if(subjectDto.getType().equals("INTERMEDIATE")){
+            cerType=CertificateType.INTERMEDIATE;
+        }
+        else {
+            cerType=CertificateType.CLIENT;
+        }
+
+        if(subjectDto.getStartDate().compareTo(subjectDto.getEndDate())<0) {
+            Certificate certificate = new Certificate();
+            certificate.setSerialNumber(subjectDto.getSerialNumber());
+            certificate.setType(cerType);
+            certificate.setValid(true);
+            IssuerDto issuerDto=new IssuerDto();
+            issuerDto.setX500Name(certificateService.getX500NameIssuer());
+            issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
+            certificateService.createCertificate(subjectDto,issuerDto);
+        }
     }
+
+
+
+//    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
+//        Date d=subjectDto.getStartDate();
+//        String pass="test";
+//
+//        IssuerDto issuerDto=new IssuerDto();
+//        subjectDto.setX500Name(certificateService.getX500NameSubject());
+//        subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
+//        issuerDto.setX500Name(certificateService.getX500NameIssuer());
+//        issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
+////        keystoreService.getCertificates(keyService.getKeyStorePass());
+//          certificateService.createCertificate(subjectDto,issuerDto);
+//    }
 
     //za ispis tabele
     @GetMapping("/allCertificates")

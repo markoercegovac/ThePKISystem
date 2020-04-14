@@ -13,4 +13,12 @@ public class SubjectData {
     private String serialNumber;
     private Date startDate;
     private Date endDate;
+    private String name;
+    private String surname;
+    private String organization;
+    private String organizationUnit;
+    private String email;
+    private String country;
+    private String   type;
+
 }

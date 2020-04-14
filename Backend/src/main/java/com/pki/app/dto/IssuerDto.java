@@ -9,4 +9,5 @@ import java.security.PrivateKey;
 public class IssuerDto {
     private X500Name x500Name;
     private PrivateKey privateKey;
+    private String alias;
 }

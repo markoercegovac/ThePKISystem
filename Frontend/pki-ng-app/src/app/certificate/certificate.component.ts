@@ -10,7 +10,16 @@ export class CertificateComponent implements OnInit {
 
   model:CertificateViewModel={
     startDate:'',
-    endDate:''
+    endDate:'',
+    serialNumber:'',
+    name:'',
+    surname:'',
+    country:'',
+    organization:'',
+    organizationUnit:'',
+    email:'',
+    type:'',
+    alias:'',
   }
 
   constructor(private http:HttpClient) { }
@@ -23,6 +32,7 @@ export class CertificateComponent implements OnInit {
     this.http.post(url, this.model).subscribe(
       res=> {
         location.reload();
+        alert("Uspe")
       },
       error => {
         alert("Error");
@@ -33,4 +43,13 @@ export class CertificateComponent implements OnInit {
 export interface CertificateViewModel {
   startDate:string;
   endDate:string;
+  serialNumber:string;
+  name:string;
+  surname:string;
+  organization:string;
+  organizationUnit:string;
+  email:string;
+  country:string;
+  alias:string;
+  type:string;
 }
