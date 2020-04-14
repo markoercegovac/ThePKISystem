@@ -12,10 +12,11 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 public interface KeystoreService {
     void store(String keyStorePassword,String keyPassword,Certificate[] chain,PrivateKey privateKey,String alias,String keyStorePath) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
     KeyStore getKeyStore(String keyStorePath,String keyStorePassword) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException;
-    List<CertificateDto> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
+    public List<X509Certificate> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
 }

@@ -22,6 +22,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 
@@ -30,6 +31,8 @@ import java.util.List;
 public class KeystoreServiceImpl implements KeystoreService {
 
     private final KeyService keyService;
+    int i=0;
+    int zbir=0;
 
     @Override
     public void store(String keyStorePassword, String keyPassword, Certificate[] chain, PrivateKey privateKey, String alias,String keyStorePath) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
@@ -54,14 +57,23 @@ public class KeystoreServiceImpl implements KeystoreService {
     }
 
     @Override
-    public List<CertificateDto> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public List<X509Certificate> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         String keyStorePath=keyService.getKeyStorePath();
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePass);
-        List<CertificateDto>certificateList=new ArrayList<>();
-        while(keyStore.aliases().hasMoreElements()){
-            String alias=keyStore.aliases().nextElement();
-            Certificate[] certificates=keyStore.getCertificateChain(alias);
+        List<X509Certificate>certificateList=new ArrayList<>();
+        Enumeration<String> aliass= keyStore.aliases();
+        while(aliass.hasMoreElements()){
+            String alias=aliass.nextElement();
+            Certificate[] certificates=keyStore.getCertificateChain(alias); //vraca lanac sertifikata
+
+            certificateList.add((X509Certificate) certificates[0]);
+
+
+
+
             //TODO NM: Uradi konverter iz lanca sertifikata u listu nasih dto sertifikata i ovu metodu koristi na kontrolleru
+      //      X509Certificate x509certificate = (X509Certificate) certificates[0];
+     //       x509certificate.
         }
         return certificateList;
     }
