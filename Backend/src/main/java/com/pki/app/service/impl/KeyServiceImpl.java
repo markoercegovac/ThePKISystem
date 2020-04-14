@@ -3,18 +3,15 @@ package com.pki.app.service.impl;
 import com.pki.app.service.KeyService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 
 @Service
 public class KeyServiceImpl implements KeyService {
     @Override
-    public byte[] getSerialNumber() throws NoSuchAlgorithmException {
-        SecureRandom secureRandom=null;
-        secureRandom=SecureRandom.getInstance("Windows-PRNG");
-        byte[] values = new byte[10];
-        secureRandom.nextBytes(values);
-        return values;
+    public BigInteger getSerialNumber() throws NoSuchAlgorithmException {
+        return new BigInteger(64, new SecureRandom());
     }
 
     @Override

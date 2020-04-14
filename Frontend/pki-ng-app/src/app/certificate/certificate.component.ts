@@ -24,6 +24,7 @@ export class CertificateComponent implements OnInit {
     email:'',
     type:'',
     alias:'',
+    issuerSerialNumber:'',
   }
 
   constructor(private http:HttpClient,private certService: CertificateServiceService) { }
@@ -41,6 +42,8 @@ export class CertificateComponent implements OnInit {
 
   generateCertificate():void {
     let url = "http://localhost:9090/api/generate";
+
+
     this.http.post(url, this.model).subscribe(
       res=> {
         location.reload();
@@ -64,5 +67,6 @@ export interface CertificateViewModel {
   country:string;
   alias:string;
   type:string;
-  alias:string;
+  issuerSerialNumber:string;
+
 }

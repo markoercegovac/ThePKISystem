@@ -62,10 +62,10 @@ public class KeystoreServiceImpl implements KeystoreService {
         Enumeration<String> aliases = keyStore.aliases();
         while(aliases.hasMoreElements()){
             String alias=aliases.nextElement();
-            Certificate[] certificates=keyStore.getCertificateChain(alias);
+            X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
             CertificateDto certificateDto=new CertificateDto();
-            certificateDto.setSerialNumber(((X509Certificate)certificates[0]).getSerialNumber().toString());
             certificateDto.setValid(true);
+            certificateDto.setSerialNumber(certificate.getSerialNumber().toString());
             certificateList.add(certificateDto);
 
             //TODO NM: Uradi konverter iz lanca sertifikata u listu nasih dto sertifikata i ovu metodu koristi na kontrolleru

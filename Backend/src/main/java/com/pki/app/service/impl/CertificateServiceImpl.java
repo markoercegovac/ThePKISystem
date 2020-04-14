@@ -42,22 +42,33 @@ public class CertificateServiceImpl implements CertificateService {
     private final KeyService keyService;
 
     @Override
-    public X509Certificate generateCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws OperatorCreationException, NoSuchAlgorithmException, CertificateException {
+    public X509Certificate generateCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws OperatorCreationException, NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException, UnrecoverableKeyException {
         JcaContentSignerBuilder builder=new JcaContentSignerBuilder("SHA256withECDSA");
         Security.addProvider(new BouncyCastleProvider());
         builder=builder.setProvider("BC");
-        ContentSigner contentSigner=builder.build(issuerDto.getPrivateKey());
-        BigInteger serialNumber=new BigInteger(1,keyService.getSerialNumber());
+        KeyStore keyStore=keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
+        PrivateKey privKey = null;
+        //smisliti jedinstveno
+        if(subjectDto.getPrivateKey().equals(issuerDto.getPrivateKey())){
+            privKey=subjectDto.getPrivateKey();
+        }
+        else {
+            privKey = (PrivateKey) keyStore.getKey(subjectDto.getIssuerSerialNumber(), "key".toCharArray());
+        }
+
+        ContentSigner contentSigner=builder.build(privKey);
+        BigInteger serialNumber=new BigInteger(subjectDto.getAlias());
         X509v3CertificateBuilder certificateBuilder=new JcaX509v3CertificateBuilder(issuerDto.getX500Name(),serialNumber,
                 subjectDto.getStartDate(),subjectDto.getEndDate(),subjectDto.getX500Name(),subjectDto.getPublicKey());
         return new JcaX509CertificateConverter().setProvider(new BouncyCastleProvider()).getCertificate(certificateBuilder.build(contentSigner));
     }
 
     @Override
-    public void createCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, KeyStoreException {
+    public void createCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, KeyStoreException, UnrecoverableKeyException {
         X509Certificate certificate=generateCertificate(subjectDto,issuerDto);
-        String keyPass="key";Certificate[] newChain=getCertificateChain(subjectDto.getAlias(),certificate);
-        keystoreService.store(keyService.getKeyStorePass(),keyPass,new Certificate[]{certificate},issuerDto.getPrivateKey(), subjectDto.getAlias(),keyService.getKeyStorePath());
+        String keyPass="key";
+        //Certificate[] newChain=getCertificateChain(subjectDto.getAlias(),certificate);
+        keystoreService.store(keyService.getKeyStorePass(),keyPass,new Certificate[]{certificate},subjectDto.getPrivateKey(), subjectDto.getAlias(),keyService.getKeyStorePath());
     }
 
 

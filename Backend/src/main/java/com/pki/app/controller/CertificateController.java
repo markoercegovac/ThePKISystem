@@ -24,7 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.security.*;
+import java.util.*;
 
 import com.pki.app.dto.IssuerDto;
 import com.pki.app.dto.SubjectDto;
@@ -39,15 +40,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 
 
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -64,19 +57,20 @@ public class CertificateController {
     private final OcspService ocspService;
 
     @PostMapping
-    public void generateCertificate(@RequestBody SubjectDto subjectDto)throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException, UnrecoverableKeyException {
             //sacuva u bazi podataka sertifikat zajedno sa njegovim tipom
+            subjectDto.setAlias(keyService.getSerialNumber().toString());
+            subjectDto.setSerialNumber(subjectDto.getAlias());
             CGservice.saveCertificateDB(subjectDto);
-
-
 
 
             IssuerDto issuerDto = new IssuerDto();
             subjectDto.setX500Name(certificateService.getX500NameSubject(subjectDto));
-            subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
-
+            KeyPair keyPair=keyService.generateKeyPair();
+            subjectDto.setPublicKey(keyPair.getPublic());
+            subjectDto.setPrivateKey(keyPair.getPrivate());
             issuerDto.setX500Name(certificateService.getX500NameIssuer());
-            issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
+
             //zasto da mi vraca sertifikate?
           //  keystoreService.getCertificates(keyService.getKeyStorePass());
               certificateService.createCertificate(subjectDto,issuerDto);
@@ -87,17 +81,23 @@ public class CertificateController {
 
 
     @PostMapping("/selfSigned/generate")
-    public void generateSelfSignedCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public void generateSelfSignedCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException, UnrecoverableKeyException {
 
         subjectDto.setType("ROOT");
+        subjectDto.setAlias(keyService.getSerialNumber().toString());
+        subjectDto.setSerialNumber(subjectDto.getAlias());
         CGservice.saveCertificateDB(subjectDto);
 
         IssuerDto issuerDto = new IssuerDto();
 
         subjectDto.setX500Name(certificateService.getX500NameSubject(subjectDto));
-        subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
+        KeyPair pair =keyService.generateKeyPair();
+        subjectDto.setPublicKey(pair.getPublic());
+        subjectDto.setPrivateKey(pair.getPrivate());
         issuerDto.setX500Name(subjectDto.getX500Name());
-        issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
+        issuerDto.setPrivateKey(pair.getPrivate());
+
+
         certificateService.createCertificate(subjectDto,issuerDto);
     }
 
