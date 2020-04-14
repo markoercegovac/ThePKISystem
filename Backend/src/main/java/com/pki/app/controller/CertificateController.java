@@ -11,6 +11,14 @@ import com.pki.app.service.CertificateGeneratorService;
 import com.pki.app.service.OcspService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.pki.app.model.Proba;
+import com.pki.app.model.SubjectData;
+
+import com.pki.app.service.CertificateGeneratorService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,6 +45,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -55,46 +64,50 @@ public class CertificateController {
     private final OcspService ocspService;
 
     @PostMapping
-    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, OperatorCreationException, CertificateException, KeyStoreException, IOException {
+    public void generateCertificate(@RequestBody SubjectDto subjectDto)throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
+            //sacuva u bazi podataka sertifikat zajedno sa njegovim tipom
+            CGservice.saveCertificateDB(subjectDto);
 
-        //dio za tip
-        CertificateType cerType;
-        if(subjectDto.getType().equals("ROOT")) {
-            cerType=CertificateType.ROOT;
-        }
-        else if(subjectDto.getType().equals("INTERMEDIATE")){
-            cerType=CertificateType.INTERMEDIATE;
-        }
-        else {
-            cerType=CertificateType.CLIENT;
-        }
 
-        if(subjectDto.getStartDate().compareTo(subjectDto.getEndDate())<0) {
-            Certificate certificate = new Certificate();
-            certificate.setSerialNumber(subjectDto.getSerialNumber());
-            certificate.setType(cerType);
-            certificate.setValid(true);
-            IssuerDto issuerDto=new IssuerDto();
+
+
+            IssuerDto issuerDto = new IssuerDto();
+            subjectDto.setX500Name(certificateService.getX500NameSubject(subjectDto));
+            subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
+
             issuerDto.setX500Name(certificateService.getX500NameIssuer());
             issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
-            certificateService.createCertificate(subjectDto,issuerDto);
-        }
+            //zasto da mi vraca sertifikate?
+          //  keystoreService.getCertificates(keyService.getKeyStorePass());
+              certificateService.createCertificate(subjectDto,issuerDto);
+
+
+
     }
 
 
+    @PostMapping("/selfSigned/generate")
+    public void generateSelfSignedCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
 
-//    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException {
-//        Date d=subjectDto.getStartDate();
-//        String pass="test";
-//
-//        IssuerDto issuerDto=new IssuerDto();
-//        subjectDto.setX500Name(certificateService.getX500NameSubject());
-//        subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
-//        issuerDto.setX500Name(certificateService.getX500NameIssuer());
-//        issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
-////        keystoreService.getCertificates(keyService.getKeyStorePass());
-//          certificateService.createCertificate(subjectDto,issuerDto);
-//    }
+        subjectDto.setType("ROOT");
+        CGservice.saveCertificateDB(subjectDto);
+
+        IssuerDto issuerDto = new IssuerDto();
+
+        subjectDto.setX500Name(certificateService.getX500NameSubject(subjectDto));
+        subjectDto.setPublicKey(keyService.generateKeyPair().getPublic());
+        issuerDto.setX500Name(subjectDto.getX500Name());
+        issuerDto.setPrivateKey(keyService.generateKeyPair().getPrivate());
+        certificateService.createCertificate(subjectDto,issuerDto);
+    }
+
+
+    //da mi vrati sve root i intermediate
+    @GetMapping("/allPossibleIssuers")
+    public ResponseEntity<ArrayList<Certificate>> getPossibleIssuers() {
+
+        return new ResponseEntity<>(CGservice.getAllCertificates(),HttpStatus.OK);
+    }
 
     //za ispis tabele
     @GetMapping("/allCertificates")

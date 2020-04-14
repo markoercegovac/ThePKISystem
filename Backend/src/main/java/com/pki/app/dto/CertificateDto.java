@@ -1,12 +1,19 @@
 package com.pki.app.dto;
 
+import com.pki.app.enumeration.CertificateType;
 import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
 
 @Data
 public class CertificateDto implements DtoEntity{
-    private Long id;
+
+
     private String serialNumber;
-    private String validFrom;
-    private String validTo;
-    private boolean isValid;
+
+    private CertificateType type;
+
+    private boolean valid;
+
 }

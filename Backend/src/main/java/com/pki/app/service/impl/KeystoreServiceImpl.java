@@ -37,6 +37,7 @@ public class KeystoreServiceImpl implements KeystoreService {
         char[] keyStorePasswordChars=keyStorePassword.toCharArray();
         char[] keyPasswordChars=keyPassword.toCharArray();
 
+        // znaci get Key store pokusava da pronadje keyStore na zadatoj putanji,ako ga ne pronadje kreira novi
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePassword);
         keyStore.setKeyEntry(alias,privateKey,keyPasswordChars,chain);
         keyStore.store(new FileOutputStream(keyStorePath),keyStorePasswordChars);
@@ -54,7 +55,6 @@ public class KeystoreServiceImpl implements KeystoreService {
         return keyStore;
     }
 
-    @Override
     public List<CertificateDto> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         String keyStorePath=keyService.getKeyStorePath();
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePass);

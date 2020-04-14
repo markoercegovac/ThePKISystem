@@ -20,4 +20,8 @@ public class Certificate {
 
     @Column
     private boolean valid;
+
+    @Column
+    private String subjectCommonName;
+
 }

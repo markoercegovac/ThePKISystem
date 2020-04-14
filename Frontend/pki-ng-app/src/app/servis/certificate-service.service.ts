@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Certificate} from "../model/certificate";
+import {CertificateDB} from "../model/certificateDB";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,6 @@ import {Certificate} from "../model/certificate";
 export class CertificateServiceService {
 
   private URL: string;
-
 
   constructor(private http: HttpClient) {
     //url koji prihvata sertifikate iz spring aplikacije
@@ -26,5 +26,9 @@ export class CertificateServiceService {
 
   public checkCertificateStatus(certificate:Certificate){
     return this.http.post<Certificate>(this.URL+'/check',certificate);
+  }
+
+  public getAllPossibleIssuers() :  Observable<CertificateDB[]> {
+    return this.http.get<CertificateDB[]>( this.URL+'/allPossibleIssuers');
   }
 }

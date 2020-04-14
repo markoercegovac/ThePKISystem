@@ -5,6 +5,7 @@ export class Certificate {
   validTo: string;
   alias: string;
 
+
   constructor(id: number, serialNumber: string, validFrom: string, validTo: string, alias: string){
     this.id=id;
     this.serialNumber=serialNumber;
