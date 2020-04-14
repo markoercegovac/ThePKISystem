@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {CertificateServiceService} from "../servis/certificate-service.service";
+import {Certificate} from "../model/certificate";
+import {CertificateDB} from "../model/certificateDB";
 
 @Component({
   selector: 'app-certificate',
@@ -8,6 +11,7 @@ import {HttpClient} from "@angular/common/http";
 })
 export class CertificateComponent implements OnInit {
 
+  listOfPossibleIssuers: CertificateDB []
   model:CertificateViewModel={
     startDate:'',
     endDate:'',
@@ -19,11 +23,20 @@ export class CertificateComponent implements OnInit {
     organizationUnit:'',
     email:'',
     type:'',
+    alias:'',
   }
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient,private certService: CertificateServiceService) { }
 
   ngOnInit(): void {
+    this.certService.getAllPossibleIssuers().subscribe(
+      data=> {
+        this.listOfPossibleIssuers=data;
+      },
+      error => {
+        console.log('Error occured', error);
+      }
+    );
   }
 
   generateCertificate():void {
@@ -31,7 +44,7 @@ export class CertificateComponent implements OnInit {
     this.http.post(url, this.model).subscribe(
       res=> {
         location.reload();
-        alert("Uspe")
+        alert("Uspesno");
       },
       error => {
         alert("Error");
@@ -50,4 +63,5 @@ export interface CertificateViewModel {
   email:string;
   country:string;
   type:string;
+  alias:string;
 }

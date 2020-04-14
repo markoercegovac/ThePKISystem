@@ -1,27 +1,19 @@
-package com.pki.app.model;
-
+package com.pki.app.dto;
 
 import com.pki.app.enumeration.CertificateType;
 import lombok.Data;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Data
-@Entity
-public class Certificate {
+public class CertificateDto{
 
-    @Id
+
     private String serialNumber;
 
-    @Column
     private CertificateType type;
 
-    @Column
     private boolean valid;
-
-    @Column
-    private String subjectCommonName;
 
 }

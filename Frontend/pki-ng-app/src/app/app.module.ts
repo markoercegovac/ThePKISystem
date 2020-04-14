@@ -8,18 +8,22 @@ import { CertificateComponent } from './certificate/certificate.component';
 import { CertificateListComponent } from './certificate-list/certificate-list.component';
 import { FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
+import { SelfsignedCertificateComponent } from './selfsignedCertificate/selfsigned-certificate.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     NavigationComponent,
     CertificateComponent,
-    CertificateListComponent
+    CertificateListComponent,
+    SelfsignedCertificateComponent,
+
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule,
+    HttpClientModule, //registrovanje servisa ne moramo explicitno da navedemo, ovo radi za nas
     AppRoutingModule,
   ],
   providers: [],
