@@ -22,6 +22,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 
@@ -36,6 +37,7 @@ public class KeystoreServiceImpl implements KeystoreService {
         char[] keyStorePasswordChars=keyStorePassword.toCharArray();
         char[] keyPasswordChars=keyPassword.toCharArray();
 
+        // znaci get Key store pokusava da pronadje keyStore na zadatoj putanji,ako ga ne pronadje kreira novi
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePassword);
         keyStore.setKeyEntry(alias,privateKey,keyPasswordChars,chain);
         keyStore.store(new FileOutputStream(keyStorePath),keyStorePasswordChars);
@@ -53,14 +55,19 @@ public class KeystoreServiceImpl implements KeystoreService {
         return keyStore;
     }
 
-    @Override
     public List<CertificateDto> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         String keyStorePath=keyService.getKeyStorePath();
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePass);
         List<CertificateDto>certificateList=new ArrayList<>();
-        while(keyStore.aliases().hasMoreElements()){
-            String alias=keyStore.aliases().nextElement();
+        Enumeration<String> aliases = keyStore.aliases();
+        while(aliases.hasMoreElements()){
+            String alias=aliases.nextElement();
             Certificate[] certificates=keyStore.getCertificateChain(alias);
+            CertificateDto certificateDto=new CertificateDto();
+            certificateDto.setSerialNumber(((X509Certificate)certificates[0]).getSerialNumber().toString());
+            certificateDto.setValid(true);
+            certificateList.add(certificateDto);
+
             //TODO NM: Uradi konverter iz lanca sertifikata u listu nasih dto sertifikata i ovu metodu koristi na kontrolleru
         }
         return certificateList;

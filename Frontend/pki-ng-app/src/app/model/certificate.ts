@@ -5,6 +5,7 @@ export class Certificate {
   vaziDo: string;
   alijas: string;
 
+
   constructor(id: number, serijskiBroj: string, vaziOd: string, vaziDo: string, alijas: string){
     this.id=id;
     this.serijskiBroj=serijskiBroj;
