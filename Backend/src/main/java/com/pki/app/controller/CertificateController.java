@@ -123,11 +123,6 @@ public class CertificateController {
         for(X509Certificate cert: allCert){
             listaSertifikata.add(new CertificateDto(cert));
         }
-
-   //     Proba proba1= new Proba(1, "SB1","12/5/2010","12/5/2015", "A" );
-   //     Proba proba2= new Proba(2, "SB2","12/5/2011","12/5/2015", "B" );
-   //     Proba proba3= new Proba(3, "SB3","12/5/2012","12/5/2015", "C" );
-
             return new ResponseEntity<>(listaSertifikata, HttpStatus.OK);
     }
 
@@ -138,6 +133,11 @@ public class CertificateController {
     @PostMapping("/check")
     public void checkStatus(@RequestBody CertificateDto certificateDto){
         ocspService.check(certificateDto.getSerialNumber());
+    }
+    @PostMapping("/download")
+    public ResponseEntity<Void> download(@RequestBody CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        certificateService.download(certificateDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

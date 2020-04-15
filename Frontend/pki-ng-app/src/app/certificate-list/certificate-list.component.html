@@ -16,10 +16,10 @@
   <div *ngIf="myResponse">
     <table class="table table-bordered table-hover">
       <thead>
-        <th>Id: </th>
-        <th>SubjName: </th>
-        <th>SubjOrgName: </th>
-        <th>SubjCountry: </th>
+  <!--      <th>Id: </th> -->
+  <!--      <th>SubjName: </th> -->
+  <!--      <th>SubjOrgName: </th> -->
+  <!--      <th>SubjCountry: </th> -->
         <th>IssName: </th>
         <th>IssOrgName: </th>
         <th>IssCountry: </th>
@@ -30,27 +30,28 @@
 
       <tbody>
         <tr *ngFor=" let proba of myResponse ">
-          <td>{{proba.id}}</td>
-          <td>{{proba.subjName}}</td>
-          <td>{{proba.subjOrgName}}</td>
-          <td>{{proba.subjCountry}}</td>
-          <td>{{proba.issName}}</td>
-          <td>{{proba.issOrgName}}</td>
-          <td>{{proba.issCountry}}</td>
-          <td>{{proba.serialNumber}}</td>
-          <td>{{proba.startDate}}</td>
-          <td>{{proba.endDate}}</td>
-          <td><button (click)="revoke(proba)">Revoke</button></td>
-          <td><button (click)="check(proba)">Check Status</button></td>
-        </tr>
-      </tbody>
-    </table>
+          <!--      <td>{{proba.id}}</td> -->
+          <!--       <td>{{proba.subjName}}</td> -->
+          <!--        <td>{{proba.subjOrgName}}</td> -->
+          <!--         <td>{{proba.subjCountry}}</td> -->
+                   <td>{{proba.issName}}</td>
+                   <td>{{proba.issOrgName}}</td>
+                   <td>{{proba.issCountry}}</td>
+                   <td>{{proba.serialNumber}}</td>
+                   <td>{{proba.startDate}}</td>
+                   <td>{{proba.endDate}}</td>
+                   <td><button (click)="revoke(proba)">Revoke</button></td>
+                   <td><button (click)="check(proba)">Check Status</button></td>
+                   <td><button (click)="download(proba)">Download</button></td>
+                 </tr>
+               </tbody>
+             </table>
 
-  </div>
+           </div>
 
 
-</div>
+         </div>
 
-</body>
+         </body>
 
-</html>
+         </html>
