@@ -10,12 +10,16 @@ import com.pki.app.model.SubjectData;
 import com.pki.app.service.CertificateService;
 import com.pki.app.service.KeyService;
 import com.pki.app.service.KeystoreService;
+import com.pki.app.service.ValidationService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
@@ -23,6 +27,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
@@ -40,6 +45,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     private final KeystoreService keystoreService;
     private final KeyService keyService;
+    private final ValidationService validationService;
 
     @Override
     public X509Certificate generateCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws OperatorCreationException, NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException, UnrecoverableKeyException {
@@ -48,27 +54,43 @@ public class CertificateServiceImpl implements CertificateService {
         builder=builder.setProvider("BC");
         KeyStore keyStore=keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         PrivateKey privKey = null;
+        X500Name issuer=null;
         //smisliti jedinstveno
         if(subjectDto.getPrivateKey().equals(issuerDto.getPrivateKey())){
+            issuer=subjectDto.getX500Name();
             privKey=subjectDto.getPrivateKey();
         }
         else {
+            X509Certificate issuerCert= (X509Certificate) keyStore.getCertificate(subjectDto.getIssuerSerialNumber());
+            issuer=new JcaX509CertificateHolder(issuerCert).getSubject();
             privKey = (PrivateKey) keyStore.getKey(subjectDto.getIssuerSerialNumber(), "key".toCharArray());
+            boolean valid=validationService.validate(subjectDto.getIssuerSerialNumber());
         }
 
         ContentSigner contentSigner=builder.build(privKey);
         BigInteger serialNumber=new BigInteger(subjectDto.getAlias());
-        X509v3CertificateBuilder certificateBuilder=new JcaX509v3CertificateBuilder(issuerDto.getX500Name(),serialNumber,
+        X509v3CertificateBuilder certificateBuilder=new JcaX509v3CertificateBuilder(issuer,serialNumber,
                 subjectDto.getStartDate(),subjectDto.getEndDate(),subjectDto.getX500Name(),subjectDto.getPublicKey());
-        return new JcaX509CertificateConverter().setProvider(new BouncyCastleProvider()).getCertificate(certificateBuilder.build(contentSigner));
+        X509CertificateHolder certHolder  = certificateBuilder.build(contentSigner);
+        JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
+        BouncyCastleProvider bcp = new BouncyCastleProvider();
+        certConverter = certConverter.setProvider(bcp);
+        return certConverter.getCertificate(certHolder);
     }
 
     @Override
     public void createCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, KeyStoreException, UnrecoverableKeyException {
         X509Certificate certificate=generateCertificate(subjectDto,issuerDto);
         String keyPass="key";
-        //Certificate[] newChain=getCertificateChain(subjectDto.getAlias(),certificate);
+        KeyStore keyStore=keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
+        if(subjectDto.getPrivateKey().equals(issuerDto.getPrivateKey())){
+
+        }
+        else {
+            boolean valid=validationService.validate(subjectDto.getIssuerSerialNumber());
+        }
         keystoreService.store(keyService.getKeyStorePass(),keyPass,new Certificate[]{certificate},subjectDto.getPrivateKey(), subjectDto.getAlias(),keyService.getKeyStorePath());
+
     }
 
 
@@ -103,17 +125,35 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public Certificate[] getCertificateChain(String alias,Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public Certificate[] getCertificateChain(String alias, Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        return new Certificate[0];
+    }
+
+    @Override
+    public Certificate[] getCertificateChain(String alias,X509Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         KeyStore keyStore = keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         Certificate[] chain=keyStore.getCertificateChain(alias);
         List<Certificate> certificateList= new ArrayList<>(Arrays.asList(chain));
-        certificateList.add(0,certificate);
+        certificateList.add(0, certificate);
 
         Certificate[] newChain=new Certificate[certificateList.size()];
         for(int i=0;i<certificateList.size();i++){
             newChain[i]=certificateList.get(i);
         }
         return newChain;
+    }
+
+    @Override
+    public void download(CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        KeyStore keyStore=keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
+        X509Certificate certificate= (X509Certificate) keyStore.getCertificate(certificateDto.getSerialNumber());
+
+
+        FileOutputStream os = new FileOutputStream(certificateDto.getSerialNumber() + ".crt");
+        os.write("-----BEGIN CERTIFICATE-----\n".getBytes("US-ASCII"));
+        os.write(Base64.encodeBase64(certificate.getEncoded(), true));
+        os.write("-----END CERTIFICATE-----\n".getBytes("US-ASCII"));
+        os.close();
     }
 
 

@@ -31,4 +31,8 @@ export class CertificateServiceService {
   public getAllPossibleIssuers() :  Observable<CertificateDB[]> {
     return this.http.get<CertificateDB[]>( this.URL+'/allPossibleIssuers');
   }
+
+  public downloadCertificate(certificate:Certificate){
+    return this.http.post<Certificate>(this.URL+'/download',certificate);
+  }
 }

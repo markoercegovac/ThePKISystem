@@ -39,14 +39,16 @@ public class KeystoreServiceImpl implements KeystoreService {
 
         // znaci get Key store pokusava da pronadje keyStore na zadatoj putanji,ako ga ne pronadje kreira novi
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePassword);
-        keyStore.setKeyEntry(alias,privateKey,keyPasswordChars,chain);
+        KeyStore.PrivateKeyEntry privKeyEntry = new KeyStore.PrivateKeyEntry(privateKey,
+                chain);
+        keyStore.setEntry(alias, privKeyEntry, new KeyStore.PasswordProtection(keyPasswordChars));
         keyStore.store(new FileOutputStream(keyStorePath),keyStorePasswordChars);
     }
 
     @Override
     public KeyStore getKeyStore(String keyStorePath, String keyStorePassword) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException {
         char[] keyStorePasswordChars=keyStorePassword.toCharArray();
-        KeyStore keyStore=KeyStore.getInstance(KeyStore.getDefaultType());
+        KeyStore keyStore=KeyStore.getInstance("PKCS12");
         try{
             keyStore.load(new FileInputStream(keyStorePath),keyStorePasswordChars);
         }catch (FileNotFoundException e){
@@ -55,23 +57,18 @@ public class KeystoreServiceImpl implements KeystoreService {
         return keyStore;
     }
 
-    public List<CertificateDto> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public List<X509Certificate> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         String keyStorePath=keyService.getKeyStorePath();
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePass);
-        List<CertificateDto>certificateList=new ArrayList<>();
-        Enumeration<String> aliases = keyStore.aliases();
-        while(aliases.hasMoreElements()){
-            String alias=aliases.nextElement();
-            X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
-            CertificateDto certificateDto=new CertificateDto();
-            certificateDto.setValid(true);
-            certificateDto.setSerialNumber(certificate.getSerialNumber().toString());
-            certificateList.add(certificateDto);
+        List<X509Certificate>certificateList=new ArrayList<>();
+        Enumeration<String> aliass= keyStore.aliases();
 
-            //TODO NM: Uradi konverter iz lanca sertifikata u listu nasih dto sertifikata i ovu metodu koristi na kontrolleru
+        while(aliass.hasMoreElements()){
+            String alias=aliass.nextElement();
+            X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
+            certificateList.add(certificate);
         }
         return certificateList;
     }
-
 
 }

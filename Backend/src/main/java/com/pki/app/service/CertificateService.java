@@ -1,5 +1,6 @@
 package com.pki.app.service;
 
+import com.pki.app.dto.CertificateDto;
 import com.pki.app.dto.DtoEntity;
 import com.pki.app.dto.IssuerDto;
 import com.pki.app.dto.SubjectDto;
@@ -20,4 +21,6 @@ public interface CertificateService {
     X500Name getX500NameSubject(DtoEntity subjectDto);
     X500Name getX500NameIssuer();
     Certificate[] getCertificateChain(String alias,Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
+    void download(CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
+    Certificate[] getCertificateChain(String alias,X509Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
 }

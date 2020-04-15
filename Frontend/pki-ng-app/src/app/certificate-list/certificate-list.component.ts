@@ -50,5 +50,15 @@ export class CertificateListComponent implements OnInit {
       );
   }
 
+  download(certificate:Certificate){
+    this.certService.downloadCertificate(certificate).subscribe(
+      res=> {
+        location.reload(); //lokacija objekta za koji je vezan
+      },
+      error => {
+        alert("Error");
+      }
+    );
+  }
 
 }
