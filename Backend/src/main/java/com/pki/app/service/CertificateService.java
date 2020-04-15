@@ -19,5 +19,5 @@ public interface CertificateService {
     void createCertificate(SubjectDto subjectDto, IssuerDto issuerDto) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, KeyStoreException, UnrecoverableKeyException;
     X500Name getX500NameSubject(DtoEntity subjectDto);
     X500Name getX500NameIssuer();
-    Certificate[] getCertificateChain(String alias,Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
+    Certificate[] getCertificateChain(String alias,X509Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException;
 }

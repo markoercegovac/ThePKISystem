@@ -39,14 +39,16 @@ public class KeystoreServiceImpl implements KeystoreService {
 
         // znaci get Key store pokusava da pronadje keyStore na zadatoj putanji,ako ga ne pronadje kreira novi
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePassword);
-        keyStore.setKeyEntry(alias,privateKey,keyPasswordChars,chain);
+        KeyStore.PrivateKeyEntry privKeyEntry = new KeyStore.PrivateKeyEntry(privateKey,
+                chain);
+        keyStore.setEntry(alias, privKeyEntry, new KeyStore.PasswordProtection(keyPasswordChars));
         keyStore.store(new FileOutputStream(keyStorePath),keyStorePasswordChars);
     }
 
     @Override
     public KeyStore getKeyStore(String keyStorePath, String keyStorePassword) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException {
         char[] keyStorePasswordChars=keyStorePassword.toCharArray();
-        KeyStore keyStore=KeyStore.getInstance(KeyStore.getDefaultType());
+        KeyStore keyStore=KeyStore.getInstance("PKCS12");
         try{
             keyStore.load(new FileInputStream(keyStorePath),keyStorePasswordChars);
         }catch (FileNotFoundException e){

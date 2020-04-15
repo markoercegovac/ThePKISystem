@@ -69,7 +69,6 @@ public class CertificateController {
             KeyPair keyPair=keyService.generateKeyPair();
             subjectDto.setPublicKey(keyPair.getPublic());
             subjectDto.setPrivateKey(keyPair.getPrivate());
-            issuerDto.setX500Name(certificateService.getX500NameIssuer());
 
             //zasto da mi vraca sertifikate?
           //  keystoreService.getCertificates(keyService.getKeyStorePass());

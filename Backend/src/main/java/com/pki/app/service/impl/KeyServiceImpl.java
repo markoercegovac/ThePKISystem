@@ -21,7 +21,7 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public String getKeyStorePath() {
-        return "test.jks";
+        return "test.pks";
     }
 
     @Override
