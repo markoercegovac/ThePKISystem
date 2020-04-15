@@ -27,6 +27,7 @@ public class ValidationServiceImpl implements ValidationService {
         KeyStore keyStore=keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         X509Certificate certificate= (X509Certificate) keyStore.getCertificate(alias);
         Certificate[] chain=keyStore.getCertificateChain(alias);
+
         return false;
     }
 

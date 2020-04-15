@@ -115,7 +115,7 @@ public class CertificateController {
         return new ResponseEntity<>(certificateDtoList, HttpStatus.OK);
     }
     @PostMapping("/revoke")
-    public void revokeCertificate(@RequestBody CertificateDto certificateDto){
+    public void revokeCertificate(@RequestBody CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         ocspService.revoke(certificateDto);
     }
     @PostMapping("/check")

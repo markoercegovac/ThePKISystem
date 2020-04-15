@@ -11,4 +11,5 @@ import java.util.Collection;
 public interface CertificateRepository extends JpaRepositoryImplementation <Certificate,String> {
 
     Collection<Certificate> findAllByTypeAndValid(CertificateType ct,boolean b);
+    Certificate findBySerialNumber(String serial);
 }
