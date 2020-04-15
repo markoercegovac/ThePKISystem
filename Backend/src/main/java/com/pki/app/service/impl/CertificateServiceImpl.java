@@ -12,6 +12,7 @@ import com.pki.app.service.KeyService;
 import com.pki.app.service.KeystoreService;
 import com.pki.app.service.ValidationService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -26,6 +27,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
@@ -123,6 +125,11 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    public Certificate[] getCertificateChain(String alias, Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        return new Certificate[0];
+    }
+
+    @Override
     public Certificate[] getCertificateChain(String alias,X509Certificate certificate) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         KeyStore keyStore = keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         Certificate[] chain=keyStore.getCertificateChain(alias);
@@ -134,6 +141,19 @@ public class CertificateServiceImpl implements CertificateService {
             newChain[i]=certificateList.get(i);
         }
         return newChain;
+    }
+
+    @Override
+    public void download(CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        KeyStore keyStore=keystoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
+        X509Certificate certificate= (X509Certificate) keyStore.getCertificate(certificateDto.getSerialNumber());
+
+
+        FileOutputStream os = new FileOutputStream(certificateDto.getSerialNumber() + ".crt");
+        os.write("-----BEGIN CERTIFICATE-----\n".getBytes("US-ASCII"));
+        os.write(Base64.encodeBase64(certificate.getEncoded(), true));
+        os.write("-----END CERTIFICATE-----\n".getBytes("US-ASCII"));
+        os.close();
     }
 
 

@@ -12,12 +12,12 @@ import com.pki.app.service.OcspService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.pki.app.dto.CertificateDto;
 import com.pki.app.model.Proba;
 import com.pki.app.model.SubjectData;
+import lombok.RequiredArgsConstructor;
 
 import com.pki.app.service.CertificateGeneratorService;
-
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.*;
 import java.util.*;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 
 import com.pki.app.dto.IssuerDto;
 import com.pki.app.dto.SubjectDto;
@@ -111,9 +113,18 @@ public class CertificateController {
     //za ispis tabele
     @GetMapping("/allCertificates")
     public ResponseEntity<List<CertificateDto>> getCertificates() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        List<CertificateDto> certificateDtoList = keystoreService.getCertificates(keyService.getKeyStorePass());
-        return new ResponseEntity<>(certificateDtoList, HttpStatus.OK);
+
+        List<CertificateDto> listaSertifikata = new ArrayList<>();
+        List<X509Certificate> allCert = new ArrayList<>();
+
+        allCert=keystoreService.getCertificates(keyService.getKeyStorePass());
+
+        for(X509Certificate cert: allCert){
+            listaSertifikata.add(new CertificateDto(cert));
+        }
+            return new ResponseEntity<>(listaSertifikata, HttpStatus.OK);
     }
+
     @PostMapping("/revoke")
     public void revokeCertificate(@RequestBody CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         ocspService.revoke(certificateDto);
@@ -121,6 +132,11 @@ public class CertificateController {
     @PostMapping("/check")
     public void checkStatus(@RequestBody CertificateDto certificateDto){
         ocspService.check(certificateDto.getSerialNumber());
+    }
+    @PostMapping("/download")
+    public ResponseEntity<Void> download(@RequestBody CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        certificateService.download(certificateDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -1,16 +1,28 @@
 export class Certificate {
+
   id: number;
+  subjName: string;
+  subjOrgName: string; //ime organizacije
+  subjCountry: string;
+
+  issName: string;
+  issOrgName: string; //ime organizacije
+  issCountry: string;
+
   serialNumber: string;
-  validFrom: string;
-  validTo: string;
-  alias: string;
+  endDate: any;
+  startDate: any;
 
-
-  constructor(id: number, serialNumber: string, validFrom: string, validTo: string, alias: string){
-    this.id=id;
+  constructor(id: number, subjName: string, subjOrgName: string, subjCountry: string, issName: string, issOrgName: string,issCountry: string,serialNumber: string,endDate: any,startDate: any){
+    this.subjName=this.subjName;
+    this.subjOrgName=subjOrgName;
+    this.subjCountry=subjCountry;
+    this.issName=issName;
+    this.issOrgName=issOrgName;
+    this.issCountry=issCountry;
     this.serialNumber=serialNumber;
-    this.validFrom=validFrom;
-    this.validTo=validTo;
-    this.alias=alias;
+    this.endDate=endDate;
+    this.startDate=startDate;
+    this.id=id;
   }
 }
